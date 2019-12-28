@@ -59,7 +59,7 @@ public class myAdapter extends BaseAdapter {
         TextView text = (TextView) vi.findViewById(R.id.textViewEntry);
         ImageView image = (ImageView) vi.findViewById(R.id.imageViewEntry);
         text.setText(names[position]);
-        image.setImageBitmap((Bitmap) img[position]);
+        //image.setImageBitmap((Bitmap) img[position]);
         return vi;
     }
 }
