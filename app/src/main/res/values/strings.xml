@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">MangaRSS</string>
+    <string name="title_home">Latest onManga</string>
+    <string name="title_search">Search for Manga</string>
+    <string name="title_favorites">Your Favorites</string>
+    <string name="title_activity_reader">ReaderActivity</string>
+    <string name="hint_search_text">Search for a Manga</string>
+</resources>
