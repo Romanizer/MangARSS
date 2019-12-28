@@ -60,6 +60,6 @@ public class myAdapter extends BaseAdapter {
         ImageView image = (ImageView) vi.findViewById(R.id.imageViewEntry);
         text.setText(names[position]);
         image.setImageBitmap((Bitmap) img[position]);
-        return vi; //amk
+        return vi;
     }
 }
