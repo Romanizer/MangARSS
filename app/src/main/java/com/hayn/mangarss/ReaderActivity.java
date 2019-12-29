@@ -3,29 +3,30 @@ package com.hayn.mangarss;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
+import android.widget.Toast;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-
 import java.util.concurrent.ExecutionException;
 
-public class ReaderActivity extends AppCompatActivity {
+public class ReaderActivity extends AppCompatActivity implements AsyncResponse {
 
     SharedPreferences prefs;
 
     private WebView webReader;
-    private String url = "https://onmanga.com/manga/solo-leveling/solo-leveling-chapter-5/?style=list";
 
-    private String styleLight = "<style type=\"text/css\">\n" +
+    public String navUrl = "https://onmanga.com/manga/solo-leveling/solo-leveling-chapter-4/?style=list";
+
+    int currChapter = 4;
+
+    private final String prefKeyDarkMode = "DarkMode";
+
+    private final String styleLight = "<style type=\"text/css\">\n" +
             "html {\n" +
             " background-color: #ffffff;}\n" + //background color light
             ".read-container{\n" +
@@ -35,9 +36,9 @@ public class ReaderActivity extends AppCompatActivity {
             " max-width: 100%;\n" +
             " height: auto; } " +
             "</style>";
-    private String styleDark = "<style type=\"text/css\">\n" +
+    private final String styleDark = "<style type=\"text/css\">\n" +
             "html {\n" +
-            " background-color: #6c757d;}\n" +
+            " background-color: #545a60;}\n" +
             ".read-container{\n" +
             " text-align: center;}\n" +
             "img {\n" +
@@ -46,7 +47,9 @@ public class ReaderActivity extends AppCompatActivity {
             " height: auto; } " +
             "</style>";
 
-    Boolean darkmode = false;
+    private final String meta = "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
+
+    private HttpGetRequest httpReq;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +57,6 @@ public class ReaderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_reader);
 
         prefs = this.getSharedPreferences(this.getPackageName(),Context.MODE_PRIVATE);
-        loadPrefs();
 
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(
@@ -68,57 +70,66 @@ public class ReaderActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_FULLSCREEN);
 
-        String result = null;
-        try {
-            result = new HttpGetRequest().execute(url).get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
-        String htmlReading, html;
-
-        Document doc = Jsoup.parse(result);
-        Elements readingElements = doc.select("div[class=reading-content]");
-        htmlReading = readingElements.html();
-
-        /**
-        Elements headerElements = doc.select("style[type=text/css]");
-        htmlCSS = headerElements.html();
-        */
-
-        //Original Combine, doesnt center or do shit, no render
-        //htmlCSS = "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"https://onmanga.com/wp-content/themes/madara/style.css\"></head>";
-
-        html = "<html><head>" + styleDark + "</head><body><div class=\"read-container\"><div class=\"reading-content\">" + htmlReading + "</div></div></body></html>";
-
-
-
         webReader = findViewById(R.id.WebViewReader);
-        //webReader.setWebViewClient(new WebViewClient());
-        //webReader.loadUrl(url);      //,"text/html","UTF-8");
+        webReader.setWebViewClient(new WebViewClient(){
+            public void onPageFinished(WebView view, String url) {
+                view.scrollTo(0,0);
+                System.out.println("nigga be srolling");
+            }
+        });
+        //webReader.loadUrl(navUrl);      //,"text/html","UTF-8");
 
         webReader.getSettings().setLoadWithOverviewMode(true);
         webReader.getSettings().setUseWideViewPort(true);
 
-        System.out.println("AAAAAAAA" + html);
-        webReader.loadDataWithBaseURL(null, html,"text/html","UTF-8",null);
         WebSettings webSettings = webReader.getSettings();
         webSettings.setJavaScriptEnabled(false);
 
-        /**
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        webReader.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public boolean onLongClick(View view) {
+                Toast.makeText(getBaseContext(),"Loading Chapter " + (currChapter + 1),Toast.LENGTH_LONG).show();
+
+                navUrl = navUrl.replace(Integer.toString(currChapter),Integer.toString(currChapter + 1));
+                currChapter++;
+                System.out.println("Loading " + navUrl);
+                initNewHtml(navUrl);
+
+                return true;
             }
         });
-         */
+
+        initNewHtml(navUrl);
     }
 
-    private void loadPrefs(){
-        darkmode = prefs.getBoolean("",false);
+    private void initNewHtml(String navUrl){
+        new HttpGetRequest(this).execute(navUrl);
+    }
+
+    @Override
+    public void processFinish(String output){
+        updateWebView(compileHtml(output));
+    }
+
+    private String compileHtml(String inputStr){
+
+        Document doc = Jsoup.parse(inputStr);
+        Elements readingElements = doc.select("div[class=reading-content]");
+
+        //Elements headerElements = doc.select("style[type=text/css]");
+
+        //Original Combine with sites css, doesn't center or do shit, no render
+        //htmlCSS = "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"https://onmanga.com/wp-content/themes/madara/style.css\"></head>";
+
+        if(prefs.getBoolean(prefKeyDarkMode,true)){
+            return "<html><head>" + meta + styleDark  + "</head><body><div class=\"read-container\"><div class=\"reading-content\">" + readingElements.html() + "</div></div></body></html>";
+        }else{
+            return "<html><head>" + meta + styleLight + "</head><body><div class=\"read-container\"><div class=\"reading-content\">" + readingElements.html() + "</div></div></body></html>";
+        }
+    }
+
+    private void updateWebView(String html){
+        System.out.println("DEBUG: " + navUrl);
+        webReader.loadDataWithBaseURL(null, html,"text/html","UTF-8",null);
     }
 }

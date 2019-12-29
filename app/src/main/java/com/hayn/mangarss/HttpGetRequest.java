@@ -9,6 +9,12 @@ import java.net.URL;
 
 public class HttpGetRequest extends AsyncTask<String, Void, String> {
 
+    HttpGetRequest(AsyncResponse delegate){
+        this.delegate = delegate;
+    }
+
+    AsyncResponse delegate = null;
+
     private static final String REQUEST_METHOD = "GET";
     private static final int READ_TIMEOUT = 15000;
     private static final int CONNECTION_TIMEOUT = 15000;
@@ -20,7 +26,7 @@ public class HttpGetRequest extends AsyncTask<String, Void, String> {
         String result;
         String inputLine;
         try {
-            //Create a URL object holding our url
+            //Create a URL object holding our navUrl
             URL myUrl = new URL(stringUrl);
             //Create a connection
             HttpURLConnection connection =(HttpURLConnection)
@@ -30,7 +36,7 @@ public class HttpGetRequest extends AsyncTask<String, Void, String> {
             connection.setReadTimeout(READ_TIMEOUT);
             connection.setConnectTimeout(CONNECTION_TIMEOUT);
 
-            //Connect to our url
+            //Connect to our navUrl
             connection.connect();
             //Create a new InputStreamReader
             InputStreamReader streamReader = new
@@ -50,19 +56,12 @@ public class HttpGetRequest extends AsyncTask<String, Void, String> {
         }
         catch(IOException e){
             e.printStackTrace();
-            result = null;
-        }
-
-        //own code lul
-
-        if(result != null){
-
-
+            result = "";
         }
 
         return result;
     }
     protected void onPostExecute(String result){
-        super.onPostExecute(result);
+        delegate.processFinish(result);
     }
 }
