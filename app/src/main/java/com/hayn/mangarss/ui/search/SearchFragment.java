@@ -1,9 +1,11 @@
 package com.hayn.mangarss.ui.search;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -14,6 +16,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.hayn.mangarss.R;
+import com.hayn.mangarss.ReaderActivity;
 
 public class SearchFragment extends Fragment {
 
@@ -27,6 +30,7 @@ public class SearchFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_search, container, false);
 
         final ListView listViewSearch = root.findViewById(R.id.ListViewSearch);
+        Button btn = root.findViewById(R.id.buttonSearch);
 
         searchViewModel.getText().observe(this, new Observer<String>() {
             @Override
@@ -35,6 +39,13 @@ public class SearchFragment extends Fragment {
             }
         });
 
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getContext(), ReaderActivity.class));
+            }
+        });
 
         return root;
     }
