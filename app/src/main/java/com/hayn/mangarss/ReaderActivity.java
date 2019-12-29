@@ -1,37 +1,60 @@
 package com.hayn.mangarss;
 
-import android.graphics.Color;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
-import android.util.Base64;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
 import java.util.concurrent.ExecutionException;
 
-import javax.xml.transform.TransformerException;
-
-import static com.hayn.mangarss.XPathParser.nodeListToString;
-
 public class ReaderActivity extends AppCompatActivity {
+
+    SharedPreferences prefs;
 
     private WebView webReader;
     private String url = "https://onmanga.com/manga/solo-leveling/solo-leveling-chapter-5/?style=list";
 
-    private String url2 = "https://www.arrow.com/";
+    private String styleLight = "<style type=\"text/css\">\n" +
+            "html {\n" +
+            " background-color: #ffffff;}\n" + //background color light
+            ".read-container{\n" +
+            " text-align: center;}\n" +
+            "img {\n" +
+            " width: auto\\9;\n" +
+            " max-width: 100%;\n" +
+            " height: auto; } " +
+            "</style>";
+    private String styleDark = "<style type=\"text/css\">\n" +
+            "html {\n" +
+            " background-color: #6c757d;}\n" +
+            ".read-container{\n" +
+            " text-align: center;}\n" +
+            "img {\n" +
+            " width: auto\\9;\n" +
+            " max-width: 100%;\n" +
+            " height: auto; } " +
+            "</style>";
+
+    Boolean darkmode = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reader);
+
+        prefs = this.getSharedPreferences(this.getPackageName(),Context.MODE_PRIVATE);
+        loadPrefs();
 
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(
@@ -45,39 +68,43 @@ public class ReaderActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_FULLSCREEN);
 
-        /**
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setCollapsible(true); // what dis
-        */
-
         String result = null;
         try {
             result = new HttpGetRequest().execute(url).get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
 
 
-        String html = null;
-        try {
-            html = nodeListToString(new XPathParser(result).getResult("//div[@class='reading-content']/"));
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
+        String htmlReading, html;
+
+        Document doc = Jsoup.parse(result);
+        Elements readingElements = doc.select("div[class=reading-content]");
+        htmlReading = readingElements.html();
+
+        /**
+        Elements headerElements = doc.select("style[type=text/css]");
+        htmlCSS = headerElements.html();
+        */
+
+        //Original Combine, doesnt center or do shit, no render
+        //htmlCSS = "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"https://onmanga.com/wp-content/themes/madara/style.css\"></head>";
+
+        html = "<html><head>" + styleDark + "</head><body><div class=\"read-container\"><div class=\"reading-content\">" + htmlReading + "</div></div></body></html>";
+
+
 
         webReader = findViewById(R.id.WebViewReader);
-        webReader.setWebViewClient(new WebViewClient());
+        //webReader.setWebViewClient(new WebViewClient());
         //webReader.loadUrl(url);      //,"text/html","UTF-8");
+
+        webReader.getSettings().setLoadWithOverviewMode(true);
+        webReader.getSettings().setUseWideViewPort(true);
+
         System.out.println("AAAAAAAA" + html);
         webReader.loadDataWithBaseURL(null, html,"text/html","UTF-8",null);
-
         WebSettings webSettings = webReader.getSettings();
         webSettings.setJavaScriptEnabled(false);
-
-
 
         /**
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -89,10 +116,9 @@ public class ReaderActivity extends AppCompatActivity {
             }
         });
          */
-
-
-
-
     }
 
+    private void loadPrefs(){
+        darkmode = prefs.getBoolean("",false);
+    }
 }
