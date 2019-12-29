@@ -17,6 +17,10 @@ import android.webkit.WebViewClient;
 
 import java.util.concurrent.ExecutionException;
 
+import javax.xml.transform.TransformerException;
+
+import static com.hayn.mangarss.XPathParser.nodeListToString;
+
 public class ReaderActivity extends AppCompatActivity {
 
     private WebView webReader;
@@ -57,17 +61,23 @@ public class ReaderActivity extends AppCompatActivity {
         }
 
 
+        String html = null;
+        try {
+            html = nodeListToString(new XPathParser(result).getResult("//div[@class='reading-content']/"));
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
+
         webReader = findViewById(R.id.WebViewReader);
         webReader.setWebViewClient(new WebViewClient());
         //webReader.loadUrl(url);      //,"text/html","UTF-8");
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAA " + result);
-
-        webReader.loadDataWithBaseURL(null, result,"text/html","UTF-8",null);
+        System.out.println("AAAAAAAA" + html);
+        webReader.loadDataWithBaseURL(null, html,"text/html","UTF-8",null);
 
         WebSettings webSettings = webReader.getSettings();
         webSettings.setJavaScriptEnabled(false);
 
-        //webReader.setBackgroundColor(1);
+
 
         /**
         FloatingActionButton fab = findViewById(R.id.fab);
