@@ -12,7 +12,6 @@ import android.widget.Toast;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import java.util.concurrent.ExecutionException;
 
 public class ReaderActivity extends AppCompatActivity implements AsyncResponse {
 
@@ -58,17 +57,7 @@ public class ReaderActivity extends AppCompatActivity implements AsyncResponse {
 
         prefs = this.getSharedPreferences(this.getPackageName(),Context.MODE_PRIVATE);
 
-        View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_IMMERSIVE
-                        // Set the content to appear under the system bars so that the
-                        // content doesn't resize when the system bars hide and show.
-                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        // Hide the nav bar and status bar
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
+        hideSystemUI();
 
         webReader = findViewById(R.id.WebViewReader);
         webReader.setWebViewClient(new WebViewClient(){
@@ -102,6 +91,26 @@ public class ReaderActivity extends AppCompatActivity implements AsyncResponse {
         initNewHtml(navUrl);
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        hideSystemUI();
+    }
+
+    private void hideSystemUI(){
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_IMMERSIVE
+                        // Set the content to appear under the system bars so that the
+                        // content doesn't resize when the system bars hideSystemUI and show.
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        // Hide the nav bar and status bar
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
+    }
+
     private void initNewHtml(String navUrl){
         new HttpGetRequest(this).execute(navUrl);
     }
@@ -121,7 +130,7 @@ public class ReaderActivity extends AppCompatActivity implements AsyncResponse {
         //Original Combine with sites css, doesn't center or do shit, no render
         //htmlCSS = "<head><link rel=\"stylesheet\" type=\"text/css\" href=\"https://onmanga.com/wp-content/themes/madara/style.css\"></head>";
 
-        if(prefs.getBoolean(prefKeyDarkMode,true)){
+        if(prefs.getBoolean(prefKeyDarkMode,false)){
             return "<html><head>" + meta + styleDark  + "</head><body><div class=\"read-container\"><div class=\"reading-content\">" + readingElements.html() + "</div></div></body></html>";
         }else{
             return "<html><head>" + meta + styleLight + "</head><body><div class=\"read-container\"><div class=\"reading-content\">" + readingElements.html() + "</div></div></body></html>";
