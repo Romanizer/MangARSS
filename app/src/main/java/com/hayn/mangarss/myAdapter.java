@@ -14,10 +14,10 @@ public class myAdapter extends BaseAdapter {
 
     private Context context;
     private String[] names;
-    private Image[] img;
+    private Bitmap[] img;
     private static LayoutInflater inflater = null;
 
-    myAdapter(Context context, String[] names, Image[] img) {
+    myAdapter(Context context, String[] names, Bitmap[] img) {
         // TODO Auto-generated constructor stub
         this.context = context;
         this.names = names;
@@ -59,7 +59,7 @@ public class myAdapter extends BaseAdapter {
         TextView text = (TextView) vi.findViewById(R.id.textViewEntry);
         ImageView image = (ImageView) vi.findViewById(R.id.imageViewEntry);
         text.setText(names[position]);
-        //image.setImageBitmap((Bitmap) img[position]);
+        image.setImageBitmap(img[position]);
         return vi;
     }
 }

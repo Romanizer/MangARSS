@@ -10,6 +10,8 @@ import org.json.*;
 
 public class ProgressMan {
 
+    private static final String FILE_NAME = "Manga.json";
+
     SharedPreferences prefs;
 
     private Map<String,Manga> mangalist = new HashMap<>(); // maybe remove?
@@ -38,14 +40,14 @@ public class ProgressMan {
 
     private synchronized void readFile(){
         try {
-            JArray = new JSONArray(FileUtils.readFileToString(new File("Manga.json"), "utf-8"));
+            JArray = new JSONArray(FileUtils.readFileToString(new File(FILE_NAME), "utf-8"));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private synchronized void writeToFile() throws IOException {
-        FileUtils.writeStringToFile(new File("Manga.json"), JArray.toString(),"utf-8");
+        FileUtils.writeStringToFile(new File(FILE_NAME), JArray.toString(),"utf-8");
         //writes JSON ARRAY JArray to file
     }
 
