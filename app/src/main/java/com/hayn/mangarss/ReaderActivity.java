@@ -1,14 +1,21 @@
 package com.hayn.mangarss;
 
+
 import android.content.Context;
 import android.content.SharedPreferences;
+
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.View;
+
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
 import android.widget.Toast;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -47,8 +54,6 @@ public class ReaderActivity extends AppCompatActivity implements AsyncResponse {
             "</style>";
 
     private final String meta = "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">";
-
-    private HttpGetRequest httpReq;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

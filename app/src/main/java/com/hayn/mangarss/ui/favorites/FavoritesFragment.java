@@ -19,7 +19,9 @@ public class FavoritesFragment extends Fragment {
     private FavoritesViewModel favoritesViewModel;
 
     ListView listFav;
-    ListAdapter adapter;
+    myAdapter adapter;
+
+    Boolean isLoaded = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -28,9 +30,9 @@ public class FavoritesFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_favorites, container, false);
 
-        adapter = new myAdapter(this,  );
+        //adapter = new myAdapter(this, );
         listFav = root.findViewById(R.id.ListViewFav);
-        listFav.setAdapter(adapter);
+        //listFav.setAdapter(adapter);
 
         favoritesViewModel.getText().observe(this, new Observer<String>() {
             @Override
@@ -39,7 +41,15 @@ public class FavoritesFragment extends Fragment {
             }
         });
 
+        if(!isLoaded){
+            //start async task for things
+        }
+
 
         return root;
+    }
+
+    public void updateListView(){
+        adapter.notifyDataSetChanged();
     }
 }

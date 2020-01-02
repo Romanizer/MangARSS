@@ -1,5 +1,6 @@
 package com.hayn.mangarss;
 
+
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -25,10 +26,10 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
+
+        //start async tasks [load pic urls and manga into list views]
+
     }
 
 
-    public String getPrefKey(){
-        return this.getPackageName();
-    }
 }

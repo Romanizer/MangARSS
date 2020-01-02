@@ -1,27 +1,30 @@
 package com.hayn.mangarss;
 
+
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.media.Image;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 public class myAdapter extends BaseAdapter {
 
     private Context context;
     private String[] names;
-    private Bitmap[] img;
+    private String[] imgUrl;
     private static LayoutInflater inflater = null;
 
-    myAdapter(Context context, String[] names, Bitmap[] img) {
+    public myAdapter(Context context, String[] names, String[] imgUrl) {
         // TODO Auto-generated constructor stub
         this.context = context;
         this.names = names;
-        this.img = img;
+        this.imgUrl = imgUrl;
         inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -36,7 +39,7 @@ public class myAdapter extends BaseAdapter {
     @Override
     public Object getItem(int position) {
         // TODO Auto-generated method stub
-        return img[position];
+        return imgUrl[position];
     }
 
     @Override
@@ -59,7 +62,7 @@ public class myAdapter extends BaseAdapter {
         TextView text = (TextView) vi.findViewById(R.id.textViewEntry);
         ImageView image = (ImageView) vi.findViewById(R.id.imageViewEntry);
         text.setText(names[position]);
-        image.setImageBitmap(img[position]);
+        Picasso.get().load(imgUrl[position]).into(image);
         return vi;
     }
 }
