@@ -30,11 +30,11 @@ public class HomeLoaderTask extends AsyncTask<String, Void, HashMap<String,Strin
             doc = Jsoup.connect(params[0]).get();
 
             Elements titleElements = doc.select("div h5 a");
-            Elements imgElements = doc.select("div[class=item-thumb hover-details c-image-hover] a img");
-            System.out.println("andrew " + titleElements.size() + "    " + imgElements.size());
+            Elements urlElements = doc.select("div[class=item-thumb hover-details c-image-hover] a");  // + " img"
+            System.out.println("andrewjjjj " + titleElements.size() + "    " + urlElements.size());
 
             for (int i = 0; i < titleElements.size(); i++) {
-                result.put(titleElements.get(i).text(), imgElements.get(i).attr("data-src"));
+                result.put(titleElements.get(i).text(), urlElements.get(i).attr("href")); //data-src
             }
         } catch (IOException e){
             e.printStackTrace();

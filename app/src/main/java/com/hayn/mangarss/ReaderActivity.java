@@ -125,6 +125,11 @@ public class ReaderActivity extends AppCompatActivity implements AsyncResponse {
         updateWebView(compileHtml(output));
     }
 
+    @Override
+    public void processFinish(String s, int i){
+        // do nothing
+    }
+
     private String compileHtml(String inputStr){
 
         Document doc = Jsoup.parse(inputStr);

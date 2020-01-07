@@ -12,7 +12,7 @@ import java.net.URL;
 
 public class HttpGetRequest extends AsyncTask<String, Void, String> {
 
-    public HttpGetRequest(AsyncResponse delegate){
+    HttpGetRequest(AsyncResponse delegate){
         this.delegate = delegate;
     }
 

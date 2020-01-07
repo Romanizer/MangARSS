@@ -59,10 +59,14 @@ public class myAdapter extends BaseAdapter {
         if (vi == null)
             vi = inflater.inflate(R.layout.manga_header_content, null);
 
-        TextView text = (TextView) vi.findViewById(R.id.textViewEntry);
-        ImageView image = (ImageView) vi.findViewById(R.id.imageViewEntry);
+        TextView text = vi.findViewById(R.id.textViewEntry);
+        ImageView image = vi.findViewById(R.id.imageViewEntry);
         text.setText(names[position]);
-        Picasso.get().load(imgUrl[position]).into(image);
+        try {
+            Picasso.get().load(imgUrl[position]).into(image);
+        } catch (Exception e){
+            //e.printStackTrace();
+        }
         return vi;
     }
 }
